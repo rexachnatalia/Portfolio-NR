@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <!-- Necesario para que se vea bien en el celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Natalia Rexach · Asistente de WhatsApp para panaderías</title>
+  <meta name="description" content="Dejo andando un asistente que responde horarios, precios y stock por WhatsApp para panaderías de barrio.">
+
+  <style>
+    /* ========== 1. COLORES Y TIPOGRAFÍA (se cambian acá, en un solo lugar) ========== */
+    :root {
+      --fondo: #f6f8f7;        /* fondo general */
+      --fondo-alt: #e9efec;    /* fondo de secciones alternadas */
+      --tinta: #16302f;        /* texto principal y botón */
+      --tinta-suave: #4a605e;  /* texto secundario */
+      --acento: #d99a1e;       /* color trigo, para detalles */
+      --linea: #c9d5d1;        /* bordes suaves */
+      --letra-titulos: Georgia, "Times New Roman", serif;
+      --letra-texto: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    /* ========== 2. BASE ========== */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--letra-texto);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--tinta);
+      background: var(--fondo);
+    }
+    h1, h2, h3 { font-family: var(--letra-titulos); line-height: 1.2; margin: 0 0 .6em; }
+    h1 { font-size: clamp(2rem, 6vw, 3.2rem); }
+    h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); }
+    p  { margin: 0 0 1em; max-width: 65ch; } /* líneas cortas = lectura cómoda */
+
+    /* Foco visible para quien navega con teclado */
+    a:focus-visible, summary:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+
+    /* ========== 3. ESTRUCTURA ========== */
+    .contenedor { max-width: 860px; margin: 0 auto; padding: 0 1.25rem; }
+    section { padding: 3.5rem 0; }
+    section:nth-of-type(even) { background: var(--fondo-alt); } /* alterna el fondo */
+
+    /* Encabezado con mi nombre */
+    header { border-bottom: 1px solid var(--linea); padding: 1rem 0; }
+    .encabezado-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+    .marca { font-family: var(--letra-titulos); font-weight: 700; font-size: 1.2rem; }
+    nav a { color: var(--tinta-suave); text-decoration: none; font-size: .95rem; }
+    nav a:hover { text-decoration: underline; }
+
+    /* ========== 4. BOTÓN ========== */
+    .boton {
+      display: inline-block;
+      background: var(--tinta);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: .9rem 1.6rem;
+      border-radius: 8px;
+      border-bottom: 4px solid var(--acento);
+    }
+    .boton:hover { background: #0f2221; }
+
+    /* ========== 5. DEMO (caja vacía por ahora) ========== */
+    .demo { display: grid; gap: 1rem; grid-template-columns: 1fr; } /* en celular: una debajo de otra */
+    .chat {
+      min-height: 220px;
+      border: 2px dashed var(--linea);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--tinta-suave);
+      background: #fff;
+    }
+    .chat h3 { font-size: 1.1rem; }
+    @media (min-width: 640px) { .demo { grid-template-columns: 1fr 1fr; } } /* en pantalla ancha: lado a lado */
+
+    /* ========== 6. PASOS ========== */
+    .pasos { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+    .pasos li { border-left: 4px solid var(--acento); padding-left: 1rem; }
+
+    /* ========== 7. PREGUNTAS FRECUENTES ========== */
+    details { border-bottom: 1px solid var(--linea); padding: .9rem 0; }
+    summary { cursor: pointer; font-weight: 600; }
+    details p { margin: .6rem 0 0; color: var(--tinta-suave); }
+
+    /* ========== 8. PIE ========== */
+    footer { padding: 2rem 0; color: var(--tinta-suave); font-size: .9rem; }
+    .cierre { text-align: center; }
+    .cierre p { margin-left: auto; margin-right: auto; }
+
+    /* Respeta a quien pidió menos movimiento en su dispositivo */
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========== ENCABEZADO ========== -->
+  <header>
+    <div class="contenedor encabezado-flex">
+      <span class="marca">Natalia Rexach</span>
+      <nav><a href="demo.html">Ver demo interactiva</a></nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 1) QUIÉN SOY Y QUÉ OFREZCO -->
+    <section id="presentacion">
+      <div class="contenedor">
+        <h1>Un asistente que contesta tu WhatsApp mientras vos atendés el mostrador</h1>
+        <p>Soy Natalia Rexach, de Luque. Me dedico a que las panaderías dejen de contestar el mismo mensaje de WhatsApp cincuenta veces por día: horarios, precios, encargos y "¿hay?".</p>
+        <p>Me especializo en detectar qué le impide a una panificadora atender bien sin sobrecargar al dueño ni a los empleados, y en sacarles esa parte de encima.</p>
+        <a class="boton" href="#reunion">Agendá una reunión de 20 minutos</a>
+      </div>
+    </section>
+
+    <!-- 2) PARA QUIÉN SÍ / PARA QUIÉN NO -->
+    <section id="para-quien">
+      <div class="contenedor">
+        <h2>Para quién sí y para quién no</h2>
+
+        <h3>Es para vos si:</h3>
+        <ul>
+          <li>El WhatsApp del negocio lo atendés vos o alguien del mostrador, entre cliente y cliente.</li>
+          <li>Te escriben todo el día las mismas preguntas: horario, precios, si hay tortas o encargos.</li>
+          <li>Querés que esas consultas se contesten solas, sin perder tu forma de hablar con los clientes.</li>
+        </ul>
+
+        <h3>No es para vos si:</h3>
+        <ul>
+          <li>Todavía no usás WhatsApp para atender al negocio.</li>
+          <li>Buscás un sistema grande, con facturación, delivery o control de caja.</li>
+          <li>No tenés a nadie que pueda actualizar horarios y precios cuando cambian.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3) DEMO: ANTES Y DESPUÉS (cajas vacías, después se cargan los chats) -->
+    <section id="demo">
+      <div class="contenedor">
+        <h2>Demo: antes y después</h2>
+        <p>Antes: tenés tres mensajes preguntando la hora y el precio de la docena, y las manos en la masa. Después: el asistente contesta solo, y vos seguís con lo tuyo.</p>
+        <div class="demo">
+          <div class="chat"><h3>Probala vos misma</h3><p>Armé una demo de WhatsApp para una panadería de ejemplo, con preguntas reales y respuestas al toque.</p></div>
+        </div>
+        <a class="boton" href="demo.html">Ver demo interactiva</a>
+      </div>
+    </section>
+
+    <!-- 4) CÓMO TRABAJO, PASO A PASO -->
+    <section id="como-trabajo">
+      <div class="contenedor">
+        <h2>Cómo trabajo, paso a paso</h2>
+        <ol class="pasos">
+          <li><strong>1. Probás la demo.</strong> Antes de hablar de nada, mirás cómo responde el asistente con un caso de ejemplo. Así sabés desde el primer minuto qué es lo que vas a tener.</li>
+          <li><strong>2. Nos juntamos 20 minutos.</strong> Charlamos sobre tu panadería: cómo atendés hoy, qué preguntas te hacen más seguido y qué te gustaría que resuelva solo. Ahí, y recién ahí, hablamos de la inversión.</li>
+          <li><strong>3. Relevamos juntas.</strong> Me pasás tus horarios, tus productos y tus precios actuales, y te hago las preguntas que me faltan para entender bien tu día a día.</li>
+          <li><strong>4. Lo armo.</strong> Preparo el asistente con tus respuestas reales y la planilla con tus datos, para que suene como vos y no como un robot genérico.</li>
+          <li><strong>5. Lo probamos juntas.</strong> Revisás las respuestas antes de que salgan al público y ajustamos lo que haga falta hasta que estés conforme.</li>
+          <li><strong>6. Lo dejo andando.</strong> En 14 días desde que arrancamos, tu WhatsApp ya está respondiendo solo, y te enseño cómo actualizarlo vos misma.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 5) CÓMO SE ARMA UN PRESUPUESTO (sin números en la web) -->
+    <section id="presupuesto">
+      <div class="contenedor">
+        <h2>Cómo se arma un presupuesto</h2>
+        <p>[Placeholder] Acá van las cosas que miro para armarlo.</p>
+        <p>[Placeholder] Acá va la aclaración: el número se habla en una reunión 1:1, después de ver la demo.</p>
+      </div>
+    </section>
+
+    <!-- 6) PREGUNTAS FRECUENTES (se abren y cierran solas, sin JavaScript) -->
+    <section id="preguntas">
+      <div class="contenedor">
+        <h2>Preguntas frecuentes</h2>
+        <details><summary>¿Y si el asistente contesta cualquier cosa?</summary><p>[Placeholder] Respuesta corta.</p></details>
+        <details><summary>¿Mis clientes se van a dar cuenta de que no soy yo?</summary><p>[Placeholder] Respuesta corta.</p></details>
+        <details><summary>¿Tengo que saber de tecnología?</summary><p>[Placeholder] Respuesta corta.</p></details>
+        <details><summary>¿Qué pasa si cambio un precio o se termina algo?</summary><p>[Placeholder] Respuesta corta.</p></details>
+        <details><summary>¿Puedo seguir usando mi WhatsApp como siempre?</summary><p>[Placeholder] Respuesta corta.</p></details>
+        <details><summary>¿Y si no me convence?</summary><p>[Placeholder] Respuesta corta.</p></details>
+      </div>
+    </section>
+
+    <!-- 7) BOTÓN PARA AGENDAR -->
+    <section id="reunion" class="cierre">
+      <div class="contenedor">
+        <h2>Hablemos 20 minutos</h2>
+        <p>[Placeholder] Una frase corta que invite a agendar, sin compromiso.</p>
+        <!-- PENDIENTE: reemplazar href="#reunion" por el link real de agenda cuando lo tengas -->
+        <a class="boton" id="boton-agenda" href="#reunion">Agendá una reunión de 20 minutos</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="contenedor">
+      <!-- El año se completa solo con el JavaScript de abajo -->
+      © <span id="anio"></span> Natalia Rexach
+    </div>
+  </footer>
+
+  <script>
+    // Pone el año actual en el pie de página
+    document.getElementById('anio').textContent = new Date().getFullYear();
+
+    // Todavía no hay link de agenda: mientras siga apuntando a "#reunion", el botón no hace nada raro.
+    // Cuando pongas el link real (https://...), este bloque deja de actuar solo.
+    var botonAgenda = document.getElementById('boton-agenda');
+    botonAgenda.addEventListener('click', function (e) {
+      if (botonAgenda.getAttribute('href') === '#reunion') { e.preventDefault(); }
+    });
+  </script>
+
+</body>
+</html>
