@@ -8,16 +8,23 @@
   <meta name="description" content="Dejo andando un asistente que responde horarios, precios y stock por WhatsApp para panaderías de barrio.">
 
   <style>
-    /* ========== 1. COLORES Y TIPOGRAFÍA (se cambian acá, en un solo lugar) ========== */
+    /* ========== 1. COLORES, TIPOGRAFÍA Y ESPACIADO (se cambian acá, en un solo lugar) ========== */
     :root {
       --fondo: #f6f8f7;        /* fondo general */
       --fondo-alt: #e9efec;    /* fondo de secciones alternadas */
+      --superficie: #ffffff;   /* tarjetas sobre el fondo */
       --tinta: #16302f;        /* texto principal y botón */
       --tinta-suave: #4a605e;  /* texto secundario */
       --acento: #d99a1e;       /* color trigo, para detalles */
+      --acento-suave: #f3e3c3; /* fondo suave del acento */
+      --si: #2f7d5c;           /* verde, para "es para vos si" */
+      --no: #b2503b;           /* rojo ladrillo, para "no es para vos si" */
       --linea: #c9d5d1;        /* bordes suaves */
       --letra-titulos: Georgia, "Times New Roman", serif;
       --letra-texto: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --radio: 14px;
+      --espacio-seccion: clamp(2.75rem, 6vw, 5rem);
+      --sombra: 0 10px 30px rgba(22, 48, 47, .07);
     }
 
     /* ========== 2. BASE ========== */
@@ -27,29 +34,78 @@
       margin: 0;
       font-family: var(--letra-texto);
       font-size: 1.05rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--tinta);
       background: var(--fondo);
+      -webkit-font-smoothing: antialiased;
     }
     h1, h2, h3 { font-family: var(--letra-titulos); line-height: 1.2; margin: 0 0 .6em; }
-    h1 { font-size: clamp(2rem, 6vw, 3.2rem); }
-    h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); }
-    p  { margin: 0 0 1em; max-width: 65ch; } /* líneas cortas = lectura cómoda */
+    h1 { font-size: clamp(2rem, 6vw, 3.4rem); letter-spacing: -.01em; }
+    h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); }
+    h2::after {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 3px;
+      background: var(--acento);
+      margin-top: .5rem;
+      border-radius: 2px;
+    }
+    h3 { font-size: 1.15rem; }
+    p  { margin: 0 0 1em; max-width: 62ch; } /* líneas cortas = lectura cómoda */
 
     /* Foco visible para quien navega con teclado */
-    a:focus-visible, summary:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+    a:focus-visible, summary:focus-visible, .chip:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
 
     /* ========== 3. ESTRUCTURA ========== */
-    .contenedor { max-width: 860px; margin: 0 auto; padding: 0 1.25rem; }
-    section { padding: 3.5rem 0; }
+    .contenedor { max-width: 920px; margin: 0 auto; padding: 0 1.25rem; }
+    section { padding: var(--espacio-seccion) 0; scroll-margin-top: 4.5rem; } /* para que el header fijo no tape el título al saltar con un link interno */
     section:nth-of-type(even) { background: var(--fondo-alt); } /* alterna el fondo */
+    @media (min-width: 960px) { .contenedor { max-width: 980px; } }
 
-    /* Encabezado con mi nombre */
-    header { border-bottom: 1px solid var(--linea); padding: 1rem 0; }
+    /* Encabezado con mi nombre, fijo arriba para volver fácil a los botones */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(246, 248, 247, .92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--linea);
+      padding: .9rem 0;
+      padding-top: max(.9rem, env(safe-area-inset-top, 0px));
+    }
     .encabezado-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
     .marca { font-family: var(--letra-titulos); font-weight: 700; font-size: 1.2rem; }
-    nav a { color: var(--tinta-suave); text-decoration: none; font-size: .95rem; }
-    nav a:hover { text-decoration: underline; }
+    nav a {
+      color: var(--tinta-suave);
+      text-decoration: none;
+      font-size: .95rem;
+      font-weight: 600;
+      padding: .4rem .3rem;
+    }
+    nav a:hover { color: var(--tinta); text-decoration: underline; }
+
+    /* ========== 3b. HERO: fondo decorativo sutil, solo con CSS, sin imágenes ========== */
+    #presentacion {
+      position: relative;
+      overflow: hidden;
+      padding-top: calc(var(--espacio-seccion) + .5rem);
+    }
+    #presentacion::before {
+      content: "";
+      position: absolute;
+      top: -140px;
+      right: -140px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: var(--acento-suave);
+      opacity: .5;
+      z-index: 0;
+    }
+    #presentacion .contenedor { position: relative; z-index: 1; }
+    #presentacion h1 { max-width: 18ch; }
 
     /* ========== 4. BOTÓN ========== */
     .boton {
@@ -58,41 +114,112 @@
       color: #fff;
       text-decoration: none;
       font-weight: 600;
-      padding: .9rem 1.6rem;
-      border-radius: 8px;
+      padding: .95rem 1.7rem;
+      min-height: 44px; /* cómodo para tocar con el dedo */
+      border-radius: 10px;
       border-bottom: 4px solid var(--acento);
+      transition: transform .15s ease, background .15s ease;
     }
-    .boton:hover { background: #0f2221; }
+    .boton:hover { background: #0f2221; transform: translateY(-1px); }
+    .boton:active { transform: translateY(0); }
 
-    /* ========== 5. DEMO (caja vacía por ahora) ========== */
-    .demo { display: grid; gap: 1rem; grid-template-columns: 1fr; } /* en celular: una debajo de otra */
+    /* ========== 5. TARJETAS GENÉRICAS (demo, presupuesto, etc.) ========== */
+    .tarjeta {
+      background: var(--superficie);
+      border: 1px solid var(--linea);
+      border-radius: var(--radio);
+      padding: 1.25rem 1.4rem;
+      box-shadow: var(--sombra);
+    }
+
+    /* ========== 6. PARA QUIÉN SÍ / NO, EN DOS COLUMNAS EN PANTALLA ANCHA ========== */
+    .columnas-si-no { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+    @media (min-width: 640px) { .columnas-si-no { grid-template-columns: 1fr 1fr; } }
+    .columna-si-no { background: var(--superficie); border-radius: var(--radio); padding: 1.25rem 1.4rem; box-shadow: var(--sombra); }
+    .columna-si-no h3 { margin-bottom: .7em; }
+    .columna-si-no ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+    .columna-si-no li { padding-left: 1.6rem; position: relative; }
+    .lista-si li::before { content: "✓"; position: absolute; left: 0; color: var(--si); font-weight: 700; }
+    .lista-no li::before { content: "✕"; position: absolute; left: 0; color: var(--no); font-weight: 700; }
+
+    /* ========== 7. DEMO (vista previa dentro de index.html) ========== */
+    .demo { display: grid; gap: 1rem; grid-template-columns: 1fr; margin: 1.25rem 0; }
     .chat {
-      min-height: 220px;
-      border: 2px dashed var(--linea);
-      border-radius: 12px;
-      padding: 1rem;
+      min-height: 160px;
+      border-radius: var(--radio);
+      padding: 1.25rem 1.4rem;
       color: var(--tinta-suave);
-      background: #fff;
+      background: var(--superficie);
+      box-shadow: var(--sombra);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
-    .chat h3 { font-size: 1.1rem; }
-    @media (min-width: 640px) { .demo { grid-template-columns: 1fr 1fr; } } /* en pantalla ancha: lado a lado */
+    .chat h3 { font-size: 1.1rem; color: var(--tinta); }
+    .chat p:last-child { margin-bottom: 0; }
 
-    /* ========== 6. PASOS ========== */
-    .pasos { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
-    .pasos li { border-left: 4px solid var(--acento); padding-left: 1rem; }
+    /* ========== 8. PASOS (Cómo trabajo / Cómo se arma el presupuesto) ========== */
+    .pasos { list-style: none; padding: 0; margin: 0; display: grid; gap: .9rem; }
+    .pasos li {
+      background: var(--superficie);
+      border-left: 4px solid var(--acento);
+      border-radius: 0 var(--radio) var(--radio) 0;
+      padding: .9rem 1.1rem;
+      box-shadow: var(--sombra);
+    }
+    .pasos li strong { color: var(--tinta); }
 
-    /* ========== 7. PREGUNTAS FRECUENTES ========== */
-    details { border-bottom: 1px solid var(--linea); padding: .9rem 0; }
-    summary { cursor: pointer; font-weight: 600; }
-    details p { margin: .6rem 0 0; color: var(--tinta-suave); }
+    /* ========== 9. PREGUNTAS FRECUENTES ========== */
+    details {
+      background: var(--superficie);
+      border: 1px solid var(--linea);
+      border-radius: var(--radio);
+      padding: .2rem 1.1rem;
+      margin-bottom: .7rem;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      padding: .9rem 1.6rem .9rem 0;
+      list-style: none;
+      position: relative;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 0;
+      top: .8rem;
+      font-size: 1.3rem;
+      color: var(--acento);
+      transition: transform .2s ease;
+    }
+    details[open] summary::after { content: "+"; transform: rotate(45deg); }
+    details p { margin: 0 0 1rem; color: var(--tinta-suave); }
 
-    /* ========== 8. PIE ========== */
-    footer { padding: 2rem 0; color: var(--tinta-suave); font-size: .9rem; }
+    /* ========== 10. CIERRE FINAL (CTA) ========== */
     .cierre { text-align: center; }
-    .cierre p { margin-left: auto; margin-right: auto; }
+    .cierre .contenedor {
+      background: var(--tinta);
+      color: #fff;
+      border-radius: var(--radio);
+      padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 5vw, 3rem);
+      max-width: 700px;
+    }
+    .cierre h2 { color: #fff; }
+    .cierre h2::after { margin-left: auto; margin-right: auto; }
+    .cierre p { margin-left: auto; margin-right: auto; color: #d8e3e0; }
+    .cierre .boton { background: var(--acento); color: var(--tinta); border-bottom-color: #fff; }
+    .cierre .boton:hover { background: #c78c16; }
+
+    /* ========== 11. PIE ========== */
+    footer { padding: 2rem 0; padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px)); color: var(--tinta-suave); font-size: .9rem; text-align: center; }
 
     /* Respeta a quien pidió menos movimiento en su dispositivo */
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .boton { transition: none; }
+    }
   </style>
 </head>
 
@@ -123,19 +250,24 @@
       <div class="contenedor">
         <h2>Para quién sí y para quién no</h2>
 
-        <h3>Es para vos si:</h3>
-        <ul>
-          <li>El WhatsApp del negocio lo atendés vos o alguien del mostrador, entre cliente y cliente.</li>
-          <li>Te escriben todo el día las mismas preguntas: horario, precios, si hay tortas o encargos.</li>
-          <li>Querés que esas consultas se contesten solas, sin perder tu forma de hablar con los clientes.</li>
-        </ul>
-
-        <h3>No es para vos si:</h3>
-        <ul>
-          <li>Todavía no usás WhatsApp para atender al negocio.</li>
-          <li>Buscás un sistema grande, con facturación, delivery o control de caja.</li>
-          <li>No tenés a nadie que pueda actualizar horarios y precios cuando cambian.</li>
-        </ul>
+        <div class="columnas-si-no">
+          <div class="columna-si-no">
+            <h3>Es para vos si:</h3>
+            <ul class="lista-si">
+              <li>El WhatsApp del negocio lo atendés vos o alguien del mostrador, entre cliente y cliente.</li>
+              <li>Te escriben todo el día las mismas preguntas: horario, precios, si hay tortas o encargos.</li>
+              <li>Querés que esas consultas se contesten solas, sin perder tu forma de hablar con los clientes.</li>
+            </ul>
+          </div>
+          <div class="columna-si-no">
+            <h3>No es para vos si:</h3>
+            <ul class="lista-no">
+              <li>Todavía no usás WhatsApp para atender al negocio.</li>
+              <li>Buscás un sistema grande, con facturación, delivery o control de caja.</li>
+              <li>No tenés a nadie que pueda actualizar horarios y precios cuando cambian.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
