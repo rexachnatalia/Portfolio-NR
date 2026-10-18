@@ -324,7 +324,7 @@
         <h1>Un asistente que contesta tu WhatsApp mientras vos atendés el mostrador</h1>
         <p>Soy Natalia Rexach. Me dedico a que las panaderías dejen de contestar el mismo mensaje de WhatsApp cincuenta veces por día: horarios, precios, encargos y "¿hay?".</p>
         <p>Me especializo en detectar qué le impide a una panificadora atender bien sin sobrecargar al dueño ni a los empleados, y en sacarles esa parte de encima.</p>
-        <a class="boton" href="#reunion">Agendá una reunión de 20 minutos</a>
+        <a class="boton" href="https://wa.me/5493516234798?text=Hola%20Natalia%2C%20vi%20tu%20p%C3%A1gina%20y%20quiero%20agendar%20los%2020%20minutos" target="_blank" rel="noopener">Agendá una reunión de 20 minutos</a>
       </div>
     </section>
 
@@ -431,8 +431,7 @@
           <li>No hay letra chica ni sorpresas: lo que se habla en esa reunión es lo que se cotiza.</li>
           <li>Si después de la demo te interesa, agendamos esos 20 minutos y seguimos desde ahí.</li>
         </ol>
-        <!-- PENDIENTE: reemplazar el número de WhatsApp por el real. Formato del link: https://wa.me/54911XXXXXXXX -->
-        <a class="boton" href="https://wa.me/54911XXXXXXXX" target="_blank" rel="noopener">Agendá la reunión de 20 minutos</a>
+        <a class="boton" href="https://wa.me/5493516234798?text=Hola%20Natalia%2C%20vi%20tu%20p%C3%A1gina%20y%20quiero%20agendar%20los%2020%20minutos" target="_blank" rel="noopener">Agendá la reunión de 20 minutos</a>
       </div>
     </section>
 
@@ -487,9 +486,8 @@
     <section id="reunion" class="cierre">
       <div class="contenedor">
         <h2>Hablemos 20 minutos</h2>
-        <p>[Placeholder] Una frase corta que invite a agendar, sin compromiso.</p>
-        <!-- PENDIENTE: reemplazar href="#reunion" por el link real de agenda cuando lo tengas -->
-        <a class="boton" id="boton-agenda" href="#reunion">Agendá una reunión de 20 minutos</a>
+        <p>¿Estás lista para agilizar esa actividad que te consume tiempo valioso?</p>
+        <a class="boton" href="https://wa.me/5493516234798?text=Hola%20Natalia%2C%20vi%20tu%20p%C3%A1gina%20y%20quiero%20agendar%20los%2020%20minutos" target="_blank" rel="noopener">Agendá una reunión de 20 minutos</a>
       </div>
     </section>
 
@@ -506,12 +504,17 @@
     // Pone el año actual en el pie de página
     document.getElementById('anio').textContent = new Date().getFullYear();
 
-    // Todavía no hay link de agenda: mientras siga apuntando a "#reunion", el botón no hace nada raro.
-    // Cuando pongas el link real (https://...), este bloque deja de actuar solo.
-    var botonAgenda = document.getElementById('boton-agenda');
-    botonAgenda.addEventListener('click', function (e) {
-      if (botonAgenda.getAttribute('href') === '#reunion') { e.preventDefault(); }
-    });
+    // Respaldo para el link "Ver demo interactiva": si por algún motivo el salto nativo
+    // del navegador no funciona bien, lo hacemos a mano con scrollIntoView.
+    var linkDemo = document.querySelector('a[href="#demo"]');
+    var seccionDemo = document.getElementById('demo');
+    if (linkDemo && seccionDemo) {
+      linkDemo.addEventListener('click', function (e) {
+        e.preventDefault();
+        seccionDemo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, '', '#demo');
+      });
+    }
 
     // ===== DEMO INTERACTIVA (embebida acá mismo) =====
     // Base de respuestas de ejemplo (panadería ficticia), con palabras clave para reconocer la pregunta
